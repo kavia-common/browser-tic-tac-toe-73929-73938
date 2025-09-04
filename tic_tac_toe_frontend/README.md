@@ -1,82 +1,46 @@
-# Lightweight React Template for KAVIA
+# Tic Tac Toe Frontend (React)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+A modern, lightweight Tic Tac Toe game with a centered 3x3 grid, local two-player turns, restart option, and result modals.
 
 ## Features
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- Local two-player gameplay (X and O alternate)
+- Turn indicator with highlight
+- Win/draw detection with modal popup
+- Restart game option
+- Modern light theme with optional dark mode
+- Top menu with theme toggle and restart
+- Supabase environment recognition (no network calls) via `REACT_APP_SUPABASE_URL`, `REACT_APP_SUPABASE_KEY`
 
-## Getting Started
+## Colors
 
-In the project directory, you can run:
+- Primary: `#1976d2`
+- Accent: `#f44336`
+- Secondary (surface): `#ffffff`
 
-### `npm start`
+## Environment Variables
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+Create a `.env` (or set in deployment) with:
+```
+REACT_APP_SUPABASE_URL=<your-supabase-url>
+REACT_APP_SUPABASE_KEY=<your-supabase-anon-key>
 ```
 
-### Components
+These are read at runtime for future integration. The UI shows whether env vars are present.
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+## Scripts
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+- `npm start` — development server at http://localhost:3000
+- `npm test` — run tests
+- `npm run build` — production build
 
-## Learn More
+## Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `src/App.js` — app shell, game logic, modals
+- `src/App.css` — styles (topbar, grid, modal)
+- `src/supabaseConfig.js` — env-based supabase config helper
 
-### Code Splitting
+## Notes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- No backend required for local play.
+- This app avoids heavy UI frameworks to stay lightweight.
