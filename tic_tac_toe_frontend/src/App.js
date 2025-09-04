@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
+import { logCompletedGame } from './supabaseClient';
 
 /**
  * Top-level Tic Tac Toe App with a modern light design.
  * - Displays a top menu with title and Restart action.
  * - Centers a 3x3 grid board for local two-player play.
  * - Shows turn-based state, and modal popups for win/draw.
- * - Reads Supabase configuration from env (if present) for future integration.
+ * - Logs completed games to Supabase if environment variables are configured.
  */
 
 // Helpers
@@ -56,8 +57,10 @@ function App() {
   const [board, setBoard] = useState(INITIAL_BOARD);
   const [xIsNext, setXIsNext] = useState(true);
   const [modal, setModal] = useState({ open: false, title: '', subtitle: '' });
+  // Track moves for logging: { index, player, moveNumber }
+  const [moves, setMoves] = useState([]);
 
-  // Supabase env recognition (no connection is used here; just recognition)
+  // Supabase env recognition (for footer indicator)
   const supabaseConfig = useMemo(() => {
     return {
       url: process.env.REACT_APP_SUPABASE_URL || '',
@@ -75,21 +78,48 @@ function App() {
   const isDraw = useMemo(() => !winner && board.every((c) => c !== null), [board, winner]);
   const currentPlayer = xIsNext ? PLAYERS.X : PLAYERS.O;
 
-  // When game ends, show modal
+  // When game ends, show modal and log to Supabase
   useEffect(() => {
-    if (winner) {
-      setModal({
-        open: true,
-        title: 'We have a winner 🎉',
-        subtitle: `Player ${winner} wins!`,
-      });
-    } else if (isDraw) {
-      setModal({
-        open: true,
-        title: 'It’s a draw 🤝',
-        subtitle: 'No more moves left.',
-      });
+    async function handleGameEnd() {
+      if (winner || isDraw) {
+        // Show modal
+        if (winner) {
+          setModal({
+            open: true,
+            title: 'We have a winner 🎉',
+            subtitle: `Player ${winner} wins!`,
+          });
+        } else if (isDraw) {
+          setModal({
+            open: true,
+            title: 'It’s a draw 🤝',
+            subtitle: 'No more moves left.',
+          });
+        }
+
+        // Log to Supabase (non-blocking UI)
+        try {
+          const { success, error } = await logCompletedGame({
+            moves,
+            winner,
+          });
+          if (!success) {
+            // Keep logging minimal to console to avoid UI noise
+            // eslint-disable-next-line no-console
+            console.warn('Supabase log failed:', error);
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('Game logged to Supabase');
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('Supabase log threw error:', e?.message || e);
+        }
+      }
     }
+    handleGameEnd();
+    // Only run when game ends or moves list changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [winner, isDraw]);
 
   const handleSquareClick = (index) => {
@@ -99,6 +129,10 @@ function App() {
     next[index] = currentPlayer;
     setBoard(next);
     setXIsNext(!xIsNext);
+    setMoves((prev) => [
+      ...prev,
+      { index, player: currentPlayer, moveNumber: prev.length + 1 },
+    ]);
   };
 
   // PUBLIC_INTERFACE
@@ -106,6 +140,7 @@ function App() {
     setBoard(INITIAL_BOARD);
     setXIsNext(true);
     setModal({ open: false, title: '', subtitle: '' });
+    setMoves([]);
   };
 
   // PUBLIC_INTERFACE
